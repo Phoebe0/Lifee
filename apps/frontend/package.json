@@ -1,0 +1,31 @@
+{
+  "name": "@lifee/frontend",
+  "private": true,
+  "scripts": {
+    "dev:mp-weixin": "uni -p mp-weixin",
+    "build:mp-weixin": "uni build -p mp-weixin",
+    "lint": "eslint \"src/**/*.{ts,vue}\"",
+    "test": "vitest run --config vitest.config.ts",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@dcloudio/uni-app": "3.0.0-alpha-5020120260710001",
+    "@dcloudio/uni-components": "3.0.0-alpha-5020120260710001",
+    "@dcloudio/uni-mp-weixin": "3.0.0-alpha-5020120260710001",
+    "@lifee/shared": "workspace:*",
+    "dayjs": "^1.11.13",
+    "pinia": "2.1.7",
+    "vue": "3.4.21"
+  },
+  "devDependencies": {
+    "@dcloudio/types": "3.4.31",
+    "@dcloudio/vite-plugin-uni": "3.0.0-alpha-5020120260710001",
+    "@types/node": "^22.10.0",
+    "eslint": "^9.17.0",
+    "typescript": "^5.7.2",
+    "unocss": "0.63.6",
+    "vite": "5.2.8",
+    "vitest": "^2.1.8",
+    "vue-tsc": "^2.2.0"
+  }
+}

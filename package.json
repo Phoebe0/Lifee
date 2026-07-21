@@ -1,0 +1,17 @@
+{
+  "name": "lifee",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "prepare": "pnpm --dir packages/shared build",
+    "predev:backend": "pnpm --dir packages/shared build",
+    "dev:backend": "pnpm --dir apps/backend start:dev",
+    "predev:frontend": "pnpm --dir packages/shared build",
+    "dev:frontend": "pnpm --dir apps/frontend dev:mp-weixin",
+    "build": "pnpm --dir packages/shared build && pnpm --dir apps/backend build && pnpm --dir apps/frontend build:mp-weixin",
+    "lint": "pnpm -r --if-present lint",
+    "test": "pnpm -r --if-present test",
+    "pretypecheck": "pnpm --dir packages/shared build",
+    "typecheck": "pnpm -r --if-present typecheck"
+  }
+}

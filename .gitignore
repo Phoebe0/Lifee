@@ -1,0 +1,78 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build and test output
+dist/
+coverage/
+unpackage/
+.output/
+.cache/
+.vite/
+*.tsbuildinfo
+
+# Local environment configuration
+.env
+.env.*
+*.env
+*.env.*
+
+# Secrets, credentials, certificates, and signing files
+secrets/
+**/secrets/
+credentials/
+**/credentials/
+.npmrc
+.netrc
+.pypirc
+auth.json
+credentials*.json
+service-account*.json
+firebase-adminsdk*.json
+*.token
+*.secret
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.mobileprovision
+*.provisionprofile
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+
+# Internal product and architecture documents
+documents/
+docs/
+backend-docs/
+FrontendArchitecture.md
+BackendArchitecture.md
+*.doc
+*.docx
+*.pages
+*.pdf
+*.ppt
+*.pptx
+*.xls
+*.xlsx
+
+# Logs and temporary files
+logs/
+*.log
+*.tmp
+*.temp
+*.swp
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE and operating system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
