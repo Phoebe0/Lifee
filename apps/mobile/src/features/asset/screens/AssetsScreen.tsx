@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
   screen: { gap: 20 },
   title: { color: theme.color.text, fontSize: 28, fontWeight: '800' },
   card: { padding: 24, backgroundColor: theme.color.brand, borderRadius: theme.radius.lg },
-  caption: { color: '#DDE1FF', fontSize: 14 },
-  value: { marginTop: 8, color: '#FFFFFF', fontSize: 34, fontWeight: '800' },
-  hint: { marginTop: 24, color: '#DDE1FF', lineHeight: 20 }
+  caption: { color: theme.color.onBrandMuted, fontSize: 14 },
+  value: { marginTop: 8, color: theme.color.onBrand, fontSize: 34, fontWeight: '800' },
+  hint: { marginTop: 24, color: theme.color.onBrandMuted, lineHeight: 20 }
 })

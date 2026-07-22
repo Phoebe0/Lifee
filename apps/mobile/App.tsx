@@ -3,12 +3,21 @@ import { useEffect } from 'react'
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { AppNavigator } from './src/application/navigation/AppNavigator'
 import { initializeApp } from './src/application/bootstrap/initializeApp'
 import { useAppStore } from './src/stores/appStore'
 import { theme } from './src/design/theme'
 
 export default function App() {
+  return (
+    <GestureHandlerRootView style={styles.root}>
+      <AppContent />
+    </GestureHandlerRootView>
+  )
+}
+
+function AppContent() {
   const bootstrapStatus = useAppStore(state => state.bootstrapStatus)
   const bootstrapError = useAppStore(state => state.bootstrapError)
 
@@ -45,6 +54,7 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  root: { flex: 1 },
   bootstrap: {
     flex: 1,
     alignItems: 'center',

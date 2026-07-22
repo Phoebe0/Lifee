@@ -1,7 +1,7 @@
 export type RootStackParamList = {
   Auth: undefined
   Main: undefined
-  CreateTransaction: { initialType?: 'income' | 'expense' } | undefined
+  CreateTransaction: { initialType?: 'income' | 'expense'; transactionId?: string } | undefined
 }
 
 export type AppTabParamList = {

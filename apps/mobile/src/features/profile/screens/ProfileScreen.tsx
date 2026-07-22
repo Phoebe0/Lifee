@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   title: { color: theme.color.text, fontSize: 28, fontWeight: '800' },
   card: { flexDirection: 'row', alignItems: 'center', gap: 16, padding: 20, backgroundColor: theme.color.surface, borderRadius: theme.radius.lg },
   avatar: { alignItems: 'center', justifyContent: 'center', width: 56, height: 56, backgroundColor: theme.color.brand, borderRadius: theme.radius.full },
-  avatarText: { color: '#FFFFFF', fontSize: 22, fontWeight: '800' },
+  avatarText: { color: theme.color.onBrand, fontSize: 22, fontWeight: '800' },
   name: { color: theme.color.text, fontSize: 17, fontWeight: '700' },
   caption: { marginTop: 5, color: theme.color.textSecondary, fontSize: 13 },
   signOut: { alignItems: 'center', padding: 14, borderWidth: 1, borderColor: theme.color.border, borderRadius: theme.radius.full },

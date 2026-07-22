@@ -34,10 +34,10 @@ export function SignInScreen() {
 const styles = StyleSheet.create({
   screen: { justifyContent: 'center', gap: 16 },
   logo: { alignItems: 'center', justifyContent: 'center', width: 72, height: 72, backgroundColor: theme.color.brand, borderRadius: 24 },
-  logoText: { color: '#FFFFFF', fontSize: 30, fontWeight: '800' },
+  logoText: { color: theme.color.onBrand, fontSize: 30, fontWeight: '800' },
   title: { color: theme.color.text, fontSize: 28, fontWeight: '800' },
   caption: { color: theme.color.textSecondary, lineHeight: 22 },
   input: { marginTop: 16, padding: 16, color: theme.color.text, backgroundColor: theme.color.surface, borderWidth: 1, borderColor: theme.color.border, borderRadius: theme.radius.md },
   button: { alignItems: 'center', padding: 16, backgroundColor: theme.color.brand, borderRadius: theme.radius.full },
-  buttonText: { color: '#FFFFFF', fontWeight: '700' }
+  buttonText: { color: theme.color.onBrand, fontWeight: '700' }
 })

@@ -69,6 +69,38 @@ const migrations = [
         updated_at TEXT NOT NULL
       );
     `
+  },
+  {
+    version: 2,
+    sql: `
+      INSERT OR IGNORE INTO categories
+        (id, type, name, icon, color, sort_order, sync_status, created_at, updated_at)
+      VALUES
+        ('default-expense-food', 'expense', '餐饮', 'food', 'brand', 10, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-expense-shopping', 'expense', '购物', 'shopping', 'brand', 20, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-expense-transport', 'expense', '交通', 'transport', 'brand', 30, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-expense-home', 'expense', '居住', 'home', 'brand', 40, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-expense-entertainment', 'expense', '娱乐', 'entertainment', 'brand', 50, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-expense-medical', 'expense', '医疗', 'medical', 'brand', 60, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-expense-education', 'expense', '教育', 'education', 'brand', 70, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-expense-other', 'expense', '其他', 'more', 'brand', 80, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-income-salary', 'income', '工资', 'salary', 'brand', 10, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-income-bonus', 'income', '奖金', 'bonus', 'brand', 20, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-income-investment', 'income', '理财', 'investment', 'brand', 30, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-income-part-time', 'income', '兼职', 'part-time', 'brand', 40, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-income-red-packet', 'income', '红包', 'red-packet', 'brand', 50, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-income-reimbursement', 'income', '报销', 'reimbursement', 'brand', 60, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-income-refund', 'income', '退款', 'refund', 'brand', 70, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('default-income-other', 'income', '其他', 'more', 'brand', 80, 'synced', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    `
+  },
+  {
+    version: 3,
+    sql: `
+      UPDATE categories
+      SET color = 'brand', updated_at = CURRENT_TIMESTAMP
+      WHERE color = '#4F5795' AND id LIKE 'default-%';
+    `
   }
 ] as const
 

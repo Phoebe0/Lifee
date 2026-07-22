@@ -1,0 +1,70 @@
+/*
+ * Lifee color tokens
+ * Reference tokens hold raw palette values. Semantic tokens are the only
+ * variables application styles should consume.
+ */
+:root,
+[data-theme='lifee-light'] {
+  --lifee-ref-white: #ffffff;
+  --lifee-ref-black: #000000;
+  --lifee-ref-ink-900: #121c2a;
+  --lifee-ref-ink-700: #454654;
+  --lifee-ref-ink-500: #757686;
+  --lifee-ref-indigo-700: #424a84;
+  --lifee-ref-indigo-600: #4f5795;
+  --lifee-ref-indigo-500: #6870af;
+  --lifee-ref-indigo-200: #dfe9fc;
+  --lifee-ref-indigo-150: #e6eeff;
+  --lifee-ref-indigo-100: #eff3ff;
+  --lifee-ref-indigo-50: #f8f9ff;
+  --lifee-ref-sky-100: #e6f4fe;
+  --lifee-ref-blue-600: #2563eb;
+  --lifee-ref-blue-50: #eaf2ff;
+  --lifee-ref-cyan-700: #006879;
+  --lifee-ref-green-500: #2ecc71;
+  --lifee-ref-red-500: #ff6b6b;
+  --lifee-ref-red-700: #ba1a1a;
+  --lifee-ref-red-50: #ffedea;
+  --lifee-ref-neutral-300: #c5c5d6;
+  --lifee-ref-neutral-150: #e6e8f1;
+
+  --lifee-color-brand: var(--lifee-ref-indigo-600);
+  --lifee-color-brand-pressed: var(--lifee-ref-indigo-700);
+  --lifee-color-brand-gradient-end: var(--lifee-ref-indigo-500);
+  --lifee-color-brand-soft: var(--lifee-ref-indigo-150);
+  --lifee-color-brand-surface: var(--lifee-ref-indigo-100);
+  --lifee-color-accent: var(--lifee-ref-cyan-700);
+  --lifee-color-background: var(--lifee-ref-indigo-50);
+  --lifee-color-app-icon-background: var(--lifee-ref-sky-100);
+  --lifee-color-surface: var(--lifee-ref-white);
+  --lifee-color-surface-translucent: rgb(255 255 255 / 80%);
+  --lifee-color-surface-subtle: rgb(255 255 255 / 56%);
+  --lifee-color-surface-calendar: rgb(255 255 255 / 48%);
+  --lifee-color-surface-modal: rgb(248 249 255 / 97%);
+  --lifee-color-surface-header: rgb(248 249 255 / 92%);
+  --lifee-color-surface-control: rgb(223 233 252 / 50%);
+  --lifee-color-category-surface: var(--lifee-ref-indigo-200);
+  --lifee-color-text: var(--lifee-ref-ink-900);
+  --lifee-color-text-secondary: var(--lifee-ref-ink-700);
+  --lifee-color-text-tertiary: var(--lifee-ref-ink-500);
+  --lifee-color-text-disabled: rgb(117 118 134 / 50%);
+  --lifee-color-on-brand: var(--lifee-ref-white);
+  --lifee-color-on-brand-muted: #dde1ff;
+  --lifee-color-border: var(--lifee-ref-neutral-300);
+  --lifee-color-border-overlay: rgb(255 255 255 / 70%);
+  --lifee-color-border-panel: rgb(255 255 255 / 50%);
+  --lifee-color-divider: rgb(197 197 214 / 30%);
+  --lifee-color-income: var(--lifee-ref-green-500);
+  --lifee-color-expense: var(--lifee-ref-red-500);
+  --lifee-color-danger: var(--lifee-ref-red-700);
+  --lifee-color-danger-surface: var(--lifee-ref-red-50);
+  --lifee-color-action-edit: var(--lifee-ref-blue-600);
+  --lifee-color-action-edit-surface: var(--lifee-ref-blue-50);
+  --lifee-color-action-delete: var(--lifee-ref-red-700);
+  --lifee-color-action-delete-surface: var(--lifee-ref-red-50);
+  --lifee-color-disabled: var(--lifee-ref-neutral-150);
+  --lifee-color-backdrop: rgb(18 28 42 / 18%);
+  --lifee-color-cursor: rgb(79 87 149 / 30%);
+  --lifee-color-shadow: var(--lifee-ref-black);
+  --lifee-color-shadow-brand: #515a97;
+}

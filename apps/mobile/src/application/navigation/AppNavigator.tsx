@@ -61,7 +61,7 @@ export function AppNavigator() {
             <RootStack.Screen
               name="CreateTransaction"
               component={CreateTransactionScreen}
-              options={{ title: '记一笔', presentation: 'modal' }}
+              options={{ headerShown: false, presentation: 'fullScreenModal', animation: 'slide_from_bottom' }}
             />
           </>
         )}
