@@ -16,6 +16,7 @@ unpackage/
 .env.*
 *.env
 *.env.*
+!apps/mobile/.env.example
 
 # Secrets, credentials, certificates, and signing files
 secrets/

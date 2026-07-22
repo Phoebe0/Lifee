@@ -1,69 +1,52 @@
 # Lifee Workspace
 
-Monorepo for the Lifee mini program and backend API.
+Lifee 是一个面向 iOS 和 Android 的个人生活与财务记录 App，采用本地优先架构。
 
-## Structure
+## Active Architecture
 
-- `apps/backend`: NestJS-style backend skeleton, Prisma schema, Redis, health check, and feature modules.
-- `apps/frontend`: uni-app-style frontend skeleton, request layer, store, theme, and feature repositories.
-- `packages/shared`: shared contracts for API responses and domain types.
-- `backend-docs`: architecture, database, API, security, deployment, and filing documents.
+- `apps/mobile`: Expo + React Native + TypeScript App。
+- `packages/shared`: 跨模块领域类型与校验。
+- `backend-docs/SupabaseArchitecture.md`: Supabase Auth、PostgreSQL、RLS、Storage 和同步设计。
+- `FrontendArchitecture.md`: App 前端架构规范。
 
-## Start Points
+`apps/backend` 是迁移前的 NestJS 实现，仅保留作历史参考；移动端的新后端能力统一使用 Supabase。
 
-- Backend entry: `apps/backend/src/main.ts`
-- Frontend entry: `apps/frontend/src/main.ts`
-- Prisma schema: `apps/backend/prisma/schema.prisma`
+## Target Stack
 
-## Local Start
+- React Native + Expo
+- React Navigation
+- Zustand
+- Expo Secure Store
+- Expo SQLite
+- Supabase
+- Jest + React Native Testing Library + Maestro
+- EAS Build / Submit / Update
 
-Prerequisites:
+## Mobile Start
 
-1. Install Node.js 20 LTS, pnpm 9, Docker Desktop, and WeChat DevTools.
-2. Install dependencies at the workspace root:
+完成依赖安装和本地环境文件后：
 
 ```bash
 pnpm install
+cp apps/mobile/.env.example apps/mobile/.env
+pnpm dev:mobile
 ```
 
-3. Create these local environment files (they are ignored by Git):
-
-- `apps/backend/.env`: backend port, database, Redis, JWT, and WeChat credentials.
-- `apps/frontend/.env`: frontend environment name and API base URL.
-
-Obtain the actual values from the project owner or your deployment platform. Never commit these files or paste production secrets into issues and pull requests.
-
-4. Start PostgreSQL and Redis, then initialize the database:
+然后使用 Expo Go 扫码，或在安装了模拟器时运行：
 
 ```bash
-docker compose up -d postgres redis
-pnpm --dir apps/backend prisma:generate
-pnpm --dir apps/backend prisma:migrate:dev --name init
+pnpm ios
+pnpm android
 ```
 
-5. Start the backend in terminal 1:
-
-```bash
-pnpm dev:backend
-```
-
-The API is available at `http://localhost:3000`. Verify it with
-`http://localhost:3000/api/v1/health`.
-
-6. Start the mini program compiler in terminal 2:
-
-```bash
-pnpm dev:frontend
-```
-
-Open WeChat DevTools and import `apps/frontend/dist/dev/mp-weixin`. For a production-style local build, run `pnpm --dir apps/frontend build:mp-weixin` and import `apps/frontend/dist/build/mp-weixin`.
+`apps/mobile/.env` 不提交 Git。只允许客户端使用 Supabase URL 和 Anon/Publishable Key，严禁放入 `service_role`。
 
 ## Verification
 
 ```bash
 pnpm typecheck
-pnpm build
+pnpm lint
 pnpm test
 ```
 
-The current backend and frontend are scaffolds. They start the application shells, health endpoint, request layer, shared contracts, and database connection structure. Business logic still needs to be filled in.
+详细迁移顺序见 `FrontendArchitecture.md` Appendix A。
