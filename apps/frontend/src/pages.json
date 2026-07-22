@@ -1,15 +1,39 @@
 {
   "pages": [
     {
-      "path": "pages/index/index",
+      "path": "pages/home/index",
       "style": {
-        "navigationBarTitleText": "Lifee"
+        "navigationStyle": "custom"
       }
     },
     {
       "path": "pages/auth/login/index",
       "style": {
-        "navigationBarTitleText": "Login"
+        "navigationBarTitleText": "登录 Lifee日序"
+      }
+    },
+    {
+      "path": "pages/finance/create/index",
+      "style": {
+        "navigationBarTitleText": "记一笔"
+      }
+    },
+    {
+      "path": "pages/finance/list/index",
+      "style": {
+        "navigationBarTitleText": "明细"
+      }
+    },
+    {
+      "path": "pages/asset/index",
+      "style": {
+        "navigationBarTitleText": "资产"
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationStyle": "custom"
       }
     }
   ],
@@ -17,6 +41,18 @@
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "Lifee",
     "navigationBarBackgroundColor": "#ffffff",
-    "backgroundColor": "#ffffff"
+    "backgroundColor": "#f6f7f4"
+  },
+  "tabBar": {
+    "color": "#909690",
+    "selectedColor": "#198754",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/home/index", "text": "首页" },
+      { "pagePath": "pages/finance/list/index", "text": "明细" },
+      { "pagePath": "pages/asset/index", "text": "资产" },
+      { "pagePath": "pages/profile/index", "text": "我的" }
+    ]
   }
 }

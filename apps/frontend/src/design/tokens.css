@@ -1,0 +1,51 @@
+page {
+  --color-brand: #4f5795;
+  --color-brand-strong: #3e477e;
+  --color-brand-soft: #e6eeff;
+  --color-accent: #006879;
+  --color-accent-soft: rgba(126, 230, 255, 0.2);
+  --color-bg-page: #f7f8ff;
+  --color-bg-surface: rgba(255, 255, 255, 0.4);
+  --color-bg-solid: #ffffff;
+  --color-bg-subtle: #eef2ff;
+  --color-text-primary: #121c2a;
+  --color-text-secondary: #454654;
+  --color-text-tertiary: #7f8290;
+  --color-border: rgba(255, 255, 255, 0.6);
+  --color-income: #2ecc71;
+  --color-income-soft: #e8f5e9;
+  --color-expense: #ff6b6b;
+  --color-expense-soft: #fff3e0;
+  --color-warning: #d48b1f;
+
+  --font-size-caption: 22rpx;
+  --font-size-small: 24rpx;
+  --font-size-body: 28rpx;
+  --font-size-title: 34rpx;
+  --font-size-display: 52rpx;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.55;
+
+  --space-1: 8rpx;
+  --space-2: 16rpx;
+  --space-3: 24rpx;
+  --space-4: 32rpx;
+  --space-5: 40rpx;
+  --space-6: 48rpx;
+  --space-8: 64rpx;
+
+  --radius-small: 12rpx;
+  --radius-medium: 12rpx;
+  --radius-large: 64rpx;
+  --radius-pill: 999rpx;
+  --shadow-card: 0 16rpx 64rpx rgba(81, 90, 151, 0.1);
+  --shadow-action: 0 20rpx 30rpx -6rpx rgba(79, 87, 149, 0.2), 0 8rpx 12rpx -8rpx rgba(79, 87, 149, 0.2);
+  --opacity-disabled: 0.45;
+  --duration-fast: 160ms;
+  --duration-normal: 240ms;
+  --z-sticky: 10;
+  --z-fab: 20;
+}
