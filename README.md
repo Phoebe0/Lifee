@@ -1,30 +1,56 @@
-# Lifee Workspace
+# Lifee 日序
 
-Lifee 是一个面向 iOS 和 Android 的个人生活与财务记录 App，采用本地优先架构。
+Lifee 是一款面向 iOS 与 Android 的本地优先个人财务记录 App。它希望用轻量、年轻的交互，帮助用户快速记账、回顾收支，并逐步建立清晰的个人资产视图。
 
-## Active Architecture
+## 主要功能
 
-- `apps/mobile`: Expo + React Native + TypeScript App。
-- `packages/shared`: 跨模块领域类型与校验。
-- `backend-docs/SupabaseArchitecture.md`: Supabase Auth、PostgreSQL、RLS、Storage 和同步设计。
-- `FrontendArchitecture.md`: App 前端架构规范。
+- 快速记录收入与支出，支持分类、日期和备注。
+- 账单明细按时间倒序分组，支持月度汇总、编辑和删除。
+- 首页展示结余、收入、支出与最近记录。
+- 本地手机号、国际手机号和邮箱 OTP 登录。
+- GitHub、微信 OAuth 登录客户端流程。
+- SecureStore 安全保存 Session 与独立 Login Hint。
+- SQLite 本地持久化，无网络时也能完成核心记账操作。
 
-旧 NestJS 后端与 Docker 数据库环境已移除。移动端的云端能力统一使用 Supabase，本地业务数据使用 Expo SQLite。
+> 资产管理与云端数据同步仍在开发中；短信、邮件及第三方登录需要配置 Supabase 后才能真实使用。
 
-## Target Stack
+## 产品架构
 
-- React Native + Expo
-- React Navigation
-- Zustand
-- Expo Secure Store
-- Expo SQLite
-- Supabase
-- Jest + React Native Testing Library + Maestro
-- EAS Build / Submit / Update
+Lifee 采用 Monorepo 与本地优先架构。移动端按业务功能拆分，认证凭证使用系统安全存储，账单数据优先写入本地 SQLite；Supabase 负责认证、PostgreSQL、RLS 和后续多设备同步。
 
-## Mobile Start
+```mermaid
+flowchart LR
+    UI["React Native 页面与组件"]
+    Feature["业务模块<br/>Auth / Finance / Assets / Profile"]
+    Local["本地基础设施<br/>SQLite / SecureStore"]
+    Cloud["云端服务<br/>Supabase Auth / PostgreSQL / RLS"]
 
-完成依赖安装和本地环境文件后：
+    UI --> Feature
+    Feature --> Local
+    Feature -. "登录与后续同步" .-> Cloud
+```
+
+```text
+Lifee/
+├── apps/mobile/                 # Expo + React Native 移动端
+│   ├── src/application/         # 启动与导航
+│   ├── src/components/          # 通用交互组件
+│   ├── src/core/                # SQLite、Supabase、配置与安全存储
+│   ├── src/design/              # 主题与设计令牌
+│   ├── src/features/            # 按业务领域拆分的功能模块
+│   └── supabase/                # 数据库迁移与认证配置说明
+└── packages/shared/             # 跨模块共享类型
+```
+
+## 技术栈
+
+- Expo、React Native、TypeScript
+- React Navigation、Zustand
+- Expo SQLite、Expo SecureStore
+- Supabase Auth、PostgreSQL、Row Level Security
+- pnpm Workspace
+
+## 本地运行
 
 ```bash
 pnpm install
@@ -32,21 +58,17 @@ cp apps/mobile/.env.example apps/mobile/.env
 pnpm dev:mobile
 ```
 
-然后使用 Expo Go 扫码，或在安装了模拟器时运行：
+未配置 Supabase 时，应用以本地模式运行，并可在“我的”页面预览登录界面。客户端只允许使用 Supabase URL 与 Anon/Publishable Key，禁止将 `service_role`、短信密钥或 OAuth Secret 写入 `EXPO_PUBLIC_*`。
+
+常用命令：
 
 ```bash
 pnpm ios
 pnpm android
-```
-
-`apps/mobile/.env` 不提交 Git。只允许客户端使用 Supabase URL 和 Anon/Publishable Key，严禁放入 `service_role`。
-
-## Verification
-
-```bash
 pnpm typecheck
 pnpm lint
-pnpm test
 ```
 
-详细迁移顺序见 `FrontendArchitecture.md` Appendix A。
+## License
+
+[MIT](./LICENSE)
