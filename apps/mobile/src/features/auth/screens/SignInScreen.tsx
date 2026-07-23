@@ -30,7 +30,7 @@ interface SignInScreenProps {
 
 export function SignInScreen({ previewMode = false, onClose }: SignInScreenProps) {
   const flow = useAuthFlow()
-  const busy = flow.loadingAction !== null
+  const busy = flow.loadingAction !== null || flow.loginHintLoading
   const isRequestingOtp = flow.loadingAction === 'request-otp'
   const isVerifyingOtp = flow.loadingAction === 'verify-otp'
   const socialLoading = flow.loadingAction === 'wechat' || flow.loadingAction === 'github'
@@ -87,15 +87,43 @@ export function SignInScreen({ previewMode = false, onClose }: SignInScreenProps
                 />
 
                 {flow.method === 'phone' ? (
-                  <PhoneFields
-                    countryCode={flow.countryCode}
-                    disabled={busy}
-                    phone={flow.phone}
-                    region={flow.phoneRegion}
-                    onChangeCountryCode={flow.setCountryCode}
-                    onChangePhone={flow.setPhone}
-                    onChangeRegion={flow.setPhoneRegion}
-                  />
+                  flow.loginHintLoading ? (
+                    <View accessibilityLabel="正在读取上次登录账号" style={styles.hintLoading}>
+                      <ActivityIndicator color={theme.color.brand} size="small" />
+                      <Text style={styles.hintLoadingText}>正在安全读取上次登录账号…</Text>
+                    </View>
+                  ) : flow.showRememberedPhone && flow.rememberedPhoneDisplay ? (
+                    <RememberedPhoneCard
+                      disabled={busy}
+                      maskedPhone={flow.rememberedPhoneDisplay}
+                      onUseOtherPhone={flow.useOtherPhone}
+                    />
+                  ) : (
+                    <View style={styles.manualPhoneSection}>
+                      <PhoneFields
+                        countryCode={flow.countryCode}
+                        disabled={busy}
+                        phone={flow.phone}
+                        region={flow.phoneRegion}
+                        onChangeCountryCode={flow.setCountryCode}
+                        onChangePhone={flow.setPhone}
+                        onChangeRegion={flow.setPhoneRegion}
+                      />
+                      {flow.loginHint && flow.rememberedPhoneDisplay && (
+                        <Pressable
+                          accessibilityRole="button"
+                          disabled={busy}
+                          hitSlop={8}
+                          style={({ pressed }) => pressed && styles.pressed}
+                          onPress={flow.useRememberedPhone}
+                        >
+                          <Text style={styles.backToRememberedText}>
+                            返回使用 {flow.rememberedPhoneDisplay}
+                          </Text>
+                        </Pressable>
+                      )}
+                    </View>
+                  )
                 ) : (
                   <EmailFields
                     disabled={busy}
@@ -139,6 +167,7 @@ export function SignInScreen({ previewMode = false, onClose }: SignInScreenProps
               ]}
               onPress={() => {
                 if (flow.pendingOtp) void flow.verifyOtp()
+                else if (flow.showRememberedPhone) void flow.continueWithLoginHint()
                 else void flow.requestOtp()
               }}
             >
@@ -148,7 +177,10 @@ export function SignInScreen({ previewMode = false, onClose }: SignInScreenProps
               <Text style={styles.primaryButtonText}>
                 {flow.pendingOtp
                   ? isVerifyingOtp ? '验证中…' : '确认登录'
-                  : isRequestingOtp ? '发送中…' : '获取验证码'}
+                  : isRequestingOtp ? '发送中…'
+                    : flow.showRememberedPhone && flow.rememberedPhoneDisplay
+                      ? `继续使用 ${flow.rememberedPhoneDisplay}`
+                      : '获取验证码'}
               </Text>
             </Pressable>
 
@@ -178,6 +210,40 @@ export function SignInScreen({ previewMode = false, onClose }: SignInScreenProps
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
+  )
+}
+
+function RememberedPhoneCard({
+  maskedPhone,
+  disabled,
+  onUseOtherPhone
+}: {
+  maskedPhone: string
+  disabled: boolean
+  onUseOtherPhone: () => void
+}) {
+  return (
+    <View style={styles.rememberedCard}>
+      <View style={styles.rememberedIcon}>
+        <PhoneIcon color={theme.color.onBrand} size={21} />
+      </View>
+      <View style={styles.rememberedContent}>
+        <Text style={styles.rememberedEyebrow}>上次验证的手机号</Text>
+        <Text accessibilityLabel={`上次验证账号 ${maskedPhone}`} style={styles.rememberedPhone}>
+          {maskedPhone}
+        </Text>
+        <Text style={styles.rememberedCaption}>仍需短信验证码确认身份</Text>
+      </View>
+      <Pressable
+        accessibilityRole="button"
+        disabled={disabled}
+        hitSlop={8}
+        style={({ pressed }) => pressed && styles.pressed}
+        onPress={onUseOtherPhone}
+      >
+        <Text style={styles.otherPhoneText}>使用其他手机号</Text>
+      </Pressable>
+    </View>
   )
 }
 
@@ -275,8 +341,10 @@ function PhoneFields({
             <TextInput
               accessibilityLabel="国际区号"
               editable={!disabled}
+              importantForAutofill="no"
+              inputMode="numeric"
               keyboardType="number-pad"
-              maxLength={4}
+              maxLength={3}
               placeholder="1"
               placeholderTextColor={theme.color.textDisabled}
               style={styles.countryCodeInput}
@@ -292,11 +360,14 @@ function PhoneFields({
           accessibilityLabel="手机号"
           autoComplete="tel"
           editable={!disabled}
+          importantForAutofill="yes"
+          inputMode="tel"
           keyboardType="phone-pad"
           maxLength={18}
           placeholder="请输入手机号"
           placeholderTextColor={theme.color.textDisabled}
           style={styles.input}
+          textContentType="telephoneNumber"
           value={phone}
           onChangeText={onChangePhone}
         />
@@ -381,11 +452,14 @@ function OtpFields({
           accessibilityLabel="六位验证码"
           autoComplete="one-time-code"
           editable={!disabled}
+          importantForAutofill="yes"
+          inputMode="numeric"
           keyboardType="number-pad"
           maxLength={6}
           placeholder="······"
           placeholderTextColor={theme.color.textDisabled}
           style={styles.otpInput}
+          textContentType="oneTimeCode"
           value={otp}
           onChangeText={value => onChangeOtp(value.replace(/\D/g, ''))}
         />
@@ -513,6 +587,64 @@ const styles = StyleSheet.create({
   },
   methodTabText: { color: theme.color.textTertiary, fontSize: 14, fontWeight: '700' },
   methodTabTextSelected: { color: theme.color.onBrand },
+  hintLoading: {
+    minHeight: 116,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing[2],
+    backgroundColor: theme.auth.glassControl,
+    borderRadius: 18
+  },
+  hintLoadingText: { color: theme.color.textTertiary, fontSize: 12 },
+  rememberedCard: {
+    minHeight: 116,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing[3],
+    padding: theme.spacing[4],
+    backgroundColor: theme.auth.brandTint,
+    borderWidth: 1,
+    borderColor: theme.auth.brandBorder,
+    borderRadius: 20
+  },
+  rememberedIcon: {
+    width: 42,
+    height: 42,
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.color.brand,
+    borderRadius: theme.radius.full
+  },
+  rememberedContent: { flex: 1, minWidth: 0 },
+  rememberedEyebrow: {
+    color: theme.color.textTertiary,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.4
+  },
+  rememberedPhone: {
+    marginTop: 3,
+    color: theme.color.text,
+    fontSize: 19,
+    fontWeight: '800',
+    fontVariant: ['tabular-nums']
+  },
+  rememberedCaption: { marginTop: 4, color: theme.color.textTertiary, fontSize: 10 },
+  otherPhoneText: {
+    color: theme.color.brand,
+    fontSize: 11,
+    fontWeight: '800',
+    textAlign: 'right'
+  },
+  manualPhoneSection: { gap: theme.spacing[3] },
+  backToRememberedText: {
+    alignSelf: 'flex-end',
+    color: theme.color.brand,
+    fontSize: 11,
+    fontWeight: '700'
+  },
   fieldGroup: { gap: theme.spacing[3] },
   fieldLabel: {
     color: theme.color.textSecondary,

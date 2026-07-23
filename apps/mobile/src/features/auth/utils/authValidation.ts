@@ -1,29 +1,45 @@
 import type { PhoneRegion } from '../models/auth'
 
-const digitsOnly = (value: string) => value.replace(/\D/g, '')
+export const MAINLAND_PHONE_REGEX = /^1[3-9]\d{9}$/
+export const E164_PHONE_REGEX = /^\+[1-9]\d{7,14}$/
+
+const ALLOWED_PHONE_INPUT_REGEX = /^[\d\s()-]*$/
+const PHONE_SEPARATOR_REGEX = /[\s()-]/g
 
 export function normalizePhone(
   region: PhoneRegion,
   countryCodeInput: string,
   phoneInput: string
 ) {
-  const phone = digitsOnly(phoneInput)
+  const rawPhone = phoneInput.trim()
+  if (!ALLOWED_PHONE_INPUT_REGEX.test(rawPhone)) {
+    throw new Error('手机号只能包含数字、空格、括号或短横线。')
+  }
+
+  // AutoFill 和通讯录号码可能带空格或短横线，校验前仅移除允许的分隔符。
+  const phone = rawPhone.replace(PHONE_SEPARATOR_REGEX, '')
 
   if (region === 'mainland') {
-    if (!/^1[3-9]\d{9}$/.test(phone)) {
+    if (!MAINLAND_PHONE_REGEX.test(phone)) {
       throw new Error('请输入有效的中国大陆手机号。')
     }
-    return `+86${phone}`
+    const normalizedPhone = `+86${phone}`
+    if (!E164_PHONE_REGEX.test(normalizedPhone)) {
+      throw new Error('手机号格式无效。')
+    }
+    return normalizedPhone
   }
 
-  const countryCode = digitsOnly(countryCodeInput)
-  if (!/^\d{1,4}$/.test(countryCode) || phone.length < 4) {
-    throw new Error('请输入有效的国际区号和手机号。')
+  const countryCode = countryCodeInput.trim()
+  if (!/^[1-9]\d{0,2}$/.test(countryCode)) {
+    throw new Error('请输入有效的国际区号。')
   }
-  if (`${countryCode}${phone}`.length > 15) {
-    throw new Error('国际手机号不能超过 15 位数字。')
+
+  const normalizedPhone = `+${countryCode}${phone}`
+  if (!E164_PHONE_REGEX.test(normalizedPhone)) {
+    throw new Error('请输入有效的国际手机号。')
   }
-  return `+${countryCode}${phone}`
+  return normalizedPhone
 }
 
 export function normalizeEmail(value: string) {
@@ -35,8 +51,12 @@ export function normalizeEmail(value: string) {
 }
 
 export function maskPhone(phone: string) {
+  const mainlandMatch = phone.match(/^\+86(1[3-9]\d{9})$/)
+  if (mainlandMatch?.[1]) {
+    return `${mainlandMatch[1].slice(0, 3)}****${mainlandMatch[1].slice(-4)}`
+  }
   if (phone.length <= 8) return phone
-  return `${phone.slice(0, -8)} ${phone.slice(-8, -4)} ${phone.slice(-4)}`
+  return `${phone.slice(0, Math.max(2, phone.length - 7))}***${phone.slice(-4)}`
 }
 
 export function maskEmail(email: string) {

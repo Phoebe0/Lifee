@@ -1,4 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
+import {
+  secureLoginHintStorage,
+  type PhoneLoginHint
+} from '../../../core/security/secureLoginHintStorage'
 import type {
   AuthMethod,
   PendingOtp,
@@ -39,6 +43,29 @@ export function useAuthFlow() {
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [resendSeconds, setResendSeconds] = useState(0)
+  const [loginHint, setLoginHint] = useState<PhoneLoginHint | null>(null)
+  const [loginHintLoading, setLoginHintLoading] = useState(true)
+  const [usingOtherPhone, setUsingOtherPhone] = useState(false)
+
+  useEffect(() => {
+    let active = true
+
+    void secureLoginHintStorage.get()
+      .then(hint => {
+        if (active) setLoginHint(hint)
+      })
+      .catch(() => {
+        // Login Hint 只是便捷提示，读取失败时退回普通登录，不阻断认证。
+        if (active) setLoginHint(null)
+      })
+      .finally(() => {
+        if (active) setLoginHintLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   useEffect(() => {
     if (resendSeconds <= 0) return
@@ -80,6 +107,29 @@ export function useAuthFlow() {
     }
   }, [countryCode, email, method, phone, phoneRegion, requireAgreement])
 
+  const continueWithLoginHint = useCallback(async () => {
+    if (!loginHint || !requireAgreement()) return
+
+    try {
+      setLoadingAction('request-otp')
+      setError(null)
+      setNotice(null)
+      await authService.sendPhoneOtp(loginHint.e164)
+      setPendingOtp({
+        method: 'phone',
+        target: loginHint.e164,
+        displayTarget: maskPhone(loginHint.e164)
+      })
+      setOtp('')
+      setResendSeconds(60)
+      setNotice('验证码已发送，请留意短信。')
+    } catch (requestError) {
+      setError(authErrorMessage(requestError))
+    } finally {
+      setLoadingAction(null)
+    }
+  }, [loginHint, requireAgreement])
+
   const verifyOtp = useCallback(async () => {
     if (!pendingOtp) return
     if (!/^\d{6}$/.test(otp)) {
@@ -91,7 +141,26 @@ export function useAuthFlow() {
       setLoadingAction('verify-otp')
       setError(null)
       if (pendingOtp.method === 'phone') {
-        await authService.verifyPhoneOtp(pendingOtp.target, otp)
+        const session = await authService.verifyPhoneOtp(pendingOtp.target, otp)
+        const verifiedPhone = session?.user.phone
+        const verifiedAt = session?.user.phone_confirmed_at
+
+        if (verifiedPhone && verifiedAt) {
+          const hint: PhoneLoginHint = {
+            version: 1,
+            method: 'phone',
+            e164: verifiedPhone,
+            region: verifiedPhone.startsWith('+86') ? 'mainland' : 'international',
+            verifiedAt
+          }
+
+          try {
+            await secureLoginHintStorage.set(hint)
+            setLoginHint(hint)
+          } catch {
+            // OTP 登录已经成功时，账号提示写入失败不能反向中断登录。
+          }
+        }
       } else {
         await authService.verifyEmailOtp(pendingOtp.target, otp)
       }
@@ -101,6 +170,27 @@ export function useAuthFlow() {
       setLoadingAction(null)
     }
   }, [otp, pendingOtp])
+
+  const resendOtp = useCallback(async () => {
+    if (!pendingOtp || resendSeconds > 0) return
+
+    try {
+      setLoadingAction('request-otp')
+      setError(null)
+      setNotice(null)
+      if (pendingOtp.method === 'phone') {
+        await authService.sendPhoneOtp(pendingOtp.target)
+      } else {
+        await authService.sendEmailOtp(pendingOtp.target)
+      }
+      setResendSeconds(60)
+      setNotice('验证码已重新发送。')
+    } catch (requestError) {
+      setError(authErrorMessage(requestError))
+    } finally {
+      setLoadingAction(null)
+    }
+  }, [pendingOtp, resendSeconds])
 
   const signInWithSocialProvider = useCallback(async (provider: SocialProvider) => {
     if (!requireAgreement()) return
@@ -136,7 +226,7 @@ export function useAuthFlow() {
   }, [])
 
   const updateCountryCode = useCallback((value: string) => {
-    setCountryCode(value.replace(/\D/g, ''))
+    setCountryCode(value)
     setError(null)
   }, [])
 
@@ -160,6 +250,25 @@ export function useAuthFlow() {
     if (accepted) setError(null)
   }, [])
 
+  const useOtherPhone = useCallback(() => {
+    setMethodState('phone')
+    setUsingOtherPhone(true)
+    setPhone('')
+    setPendingOtp(null)
+    setOtp('')
+    setError(null)
+    setNotice(null)
+  }, [])
+
+  const useRememberedPhone = useCallback(() => {
+    setMethodState('phone')
+    setUsingOtherPhone(false)
+    setPendingOtp(null)
+    setOtp('')
+    setError(null)
+    setNotice(null)
+  }, [])
+
   return {
     method,
     phoneRegion,
@@ -173,6 +282,10 @@ export function useAuthFlow() {
     error,
     notice,
     resendSeconds,
+    loginHint,
+    loginHintLoading,
+    rememberedPhoneDisplay: loginHint ? maskPhone(loginHint.e164) : null,
+    showRememberedPhone: method === 'phone' && Boolean(loginHint) && !usingOtherPhone,
     setMethod,
     setPhoneRegion: updatePhoneRegion,
     setCountryCode: updateCountryCode,
@@ -181,9 +294,12 @@ export function useAuthFlow() {
     setOtp: updateOtp,
     setAgreementAccepted: updateAgreement,
     requestOtp,
+    continueWithLoginHint,
     verifyOtp,
-    resendOtp: requestOtp,
+    resendOtp,
     signInWithSocialProvider,
-    editIdentity
+    editIdentity,
+    useOtherPhone,
+    useRememberedPhone
   }
 }
