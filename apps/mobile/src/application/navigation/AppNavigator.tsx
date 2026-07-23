@@ -10,6 +10,7 @@ import { CreateTransactionScreen } from '../../features/finance/screens/CreateTr
 import { AssetsScreen } from '../../features/asset/screens/AssetsScreen'
 import { ProfileScreen } from '../../features/profile/screens/ProfileScreen'
 import { SignInScreen } from '../../features/auth/screens/SignInScreen'
+import { AuthPreviewScreen } from '../../features/auth/screens/AuthPreviewScreen'
 import type { AppTabParamList, RootStackParamList } from './types'
 
 const RootStack = createNativeStackNavigator<RootStackParamList>()
@@ -61,6 +62,11 @@ export function AppNavigator() {
             <RootStack.Screen
               name="CreateTransaction"
               component={CreateTransactionScreen}
+              options={{ headerShown: false, presentation: 'fullScreenModal', animation: 'slide_from_bottom' }}
+            />
+            <RootStack.Screen
+              name="AuthPreview"
+              component={AuthPreviewScreen}
               options={{ headerShown: false, presentation: 'fullScreenModal', animation: 'slide_from_bottom' }}
             />
           </>

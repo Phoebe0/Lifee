@@ -29,6 +29,21 @@ export const theme = {
     redPacket: { icon: '#E5484D', surface: '#FFEBEE' },
     reimbursement: { icon: '#1A7F8E', surface: '#E2F6F8' },
     refund: { icon: '#2B8C62', surface: '#E8F5E9' }
+  },
+  auth: {
+    glassSurface: 'rgba(255,255,255,0.48)',
+    glassStrong: 'rgba(255,255,255,0.62)',
+    glassControl: 'rgba(255,255,255,0.40)',
+    glassBorder: 'rgba(255,255,255,0.78)',
+    brandTint: 'rgba(79,87,149,0.11)',
+    brandBorder: 'rgba(79,87,149,0.26)',
+    brandGlow: 'rgba(104,112,175,0.22)',
+    accentGlow: 'rgba(126,230,255,0.20)',
+    flowRing: 'rgba(79,87,149,0.14)',
+    controlTrack: 'rgba(223,233,252,0.46)',
+    noticeSurface: 'rgba(230,244,254,0.82)',
+    dangerSurface: 'rgba(255,237,234,0.82)',
+    markAccent: '#7EE6FF'
   }
 } as const
 

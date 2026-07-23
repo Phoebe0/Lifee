@@ -2,6 +2,7 @@ import { initializeDatabase } from '../../core/database/database'
 import { supabase } from '../../core/supabase/client'
 import { useAppStore } from '../../stores/appStore'
 import { useAuthStore } from '../../stores/authStore'
+import { startAuthDeepLinkListener } from '../../features/auth/services/authDeepLinkService'
 
 let initialized = false
 
@@ -21,6 +22,7 @@ export async function initializeApp() {
       supabase.auth.onAuthStateChange((_event, session) => {
         useAuthStore.getState().setSession(session)
       })
+      startAuthDeepLinkListener()
     }
 
     useAppStore.getState().setBootstrapStatus('ready')

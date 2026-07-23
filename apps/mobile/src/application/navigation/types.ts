@@ -1,5 +1,6 @@
 export type RootStackParamList = {
   Auth: undefined
+  AuthPreview: undefined
   Main: undefined
   CreateTransaction: { initialType?: 'income' | 'expense'; transactionId?: string } | undefined
 }
