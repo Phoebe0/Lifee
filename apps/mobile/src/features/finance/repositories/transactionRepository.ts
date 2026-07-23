@@ -51,7 +51,7 @@ export const transactionRepository = {
       SELECT ${transactionColumns}
       FROM transactions
       WHERE deleted_at IS NULL
-      ORDER BY occurred_at DESC
+      ORDER BY occurred_at DESC, created_at DESC
     `)
     return rows.map(mapRow)
   },

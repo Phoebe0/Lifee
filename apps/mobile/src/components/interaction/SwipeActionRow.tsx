@@ -16,13 +16,19 @@ export interface SwipeActionRowProps {
   children: ReactNode
   actions: SwipeRowAction[]
   actionWidth?: number
+  borderRadius?: number
 }
 
-export function SwipeActionRow({ children, actions, actionWidth = 72 }: SwipeActionRowProps) {
+export function SwipeActionRow({
+  children,
+  actions,
+  actionWidth = 72,
+  borderRadius = theme.radius.md
+}: SwipeActionRowProps) {
   const swipeableRef = useRef<Swipeable>(null)
 
   return (
-    <View style={styles.clip}>
+    <View style={[styles.clip, { borderRadius }]}>
       <Swipeable
         ref={swipeableRef}
         dragOffsetFromRightEdge={12}
