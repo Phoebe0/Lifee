@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
-import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation, type CompositeNavigationProp } from '@react-navigation/native'
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import DeleteIcon from '../../../../assets/icons/actions/delete.svg'
 import EditIcon from '../../../../assets/icons/actions/edit.svg'
@@ -9,12 +10,17 @@ import { SwipeActionRow } from '../../../components/interaction/SwipeActionRow'
 import { theme } from '../../../design/theme'
 import { transactionRepository } from '../../finance/repositories/transactionRepository'
 import type { Transaction } from '../../finance/models/transaction'
-import type { RootStackParamList } from '../../../application/navigation/types'
+import type { AppTabParamList, RootStackParamList } from '../../../application/navigation/types'
 
 const money = (cent: number) => `¥ ${(cent / 100).toFixed(2)}`
 
+type HomeNavigation = CompositeNavigationProp<
+  BottomTabNavigationProp<AppTabParamList, 'Home'>,
+  NativeStackNavigationProp<RootStackParamList>
+>
+
 export function HomeScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const navigation = useNavigation<HomeNavigation>()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
@@ -97,6 +103,19 @@ export function HomeScreen() {
         </SwipeActionRow>
       ))}
       {!transactions.length && <Text style={styles.empty}>还没有记录，先记下第一笔吧。</Text>}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="查看收支分析报告"
+        style={({ pressed }) => [styles.insight, pressed && styles.actionPressed]}
+        onPress={() => navigation.navigate('Analytics')}
+      >
+        <View style={styles.insightCopy}>
+          <Text style={styles.insightEyebrow}>支出分析报告</Text>
+          <Text style={styles.insightTitle}>看看你的钱都花在哪了？</Text>
+          <Text style={styles.insightCaption}>查看趋势与分类占比</Text>
+        </View>
+        <Text style={styles.insightArrow}>›</Text>
+      </Pressable>
     </Screen>
   )
 }
@@ -119,5 +138,22 @@ const styles = StyleSheet.create({
   row: { minHeight: 72, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: theme.spacing[3], padding: 16, backgroundColor: theme.color.surface },
   rowContent: { flex: 1, minWidth: 0 },
   rowTitle: { color: theme.color.text, fontSize: 16, fontWeight: '600' },
-  empty: { padding: 24, color: theme.color.textSecondary, textAlign: 'center', backgroundColor: theme.color.surface, borderRadius: theme.radius.md }
+  empty: { padding: 24, color: theme.color.textSecondary, textAlign: 'center', backgroundColor: theme.color.surface, borderRadius: theme.radius.md },
+  insight: {
+    minHeight: 124,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: theme.spacing[4],
+    padding: theme.spacing[6],
+    backgroundColor: theme.finance.analysisSurface,
+    borderWidth: 1,
+    borderColor: theme.auth.brandBorder,
+    borderRadius: theme.radius.lg
+  },
+  insightCopy: { flex: 1, gap: theme.spacing[1] },
+  insightEyebrow: { color: theme.color.brand, fontSize: 11, fontWeight: '800' },
+  insightTitle: { color: theme.color.text, fontSize: 17, fontWeight: '800' },
+  insightCaption: { color: theme.color.textTertiary, fontSize: 12 },
+  insightArrow: { color: theme.color.brand, fontSize: 30, fontWeight: '300' }
 })

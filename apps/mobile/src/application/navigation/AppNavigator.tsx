@@ -5,9 +5,9 @@ import { theme } from '../../design/theme'
 import { isSupabaseConfigured } from '../../core/config/env'
 import { useAuthStore } from '../../stores/authStore'
 import { HomeScreen } from '../../features/analytics/screens/HomeScreen'
+import { AnalyticsScreen } from '../../features/analytics/screens/AnalyticsScreen'
 import { TransactionListScreen } from '../../features/finance/screens/TransactionListScreen'
 import { CreateTransactionScreen } from '../../features/finance/screens/CreateTransactionScreen'
-import { AssetsScreen } from '../../features/asset/screens/AssetsScreen'
 import { ProfileScreen } from '../../features/profile/screens/ProfileScreen'
 import { SignInScreen } from '../../features/auth/screens/SignInScreen'
 import { AuthPreviewScreen } from '../../features/auth/screens/AuthPreviewScreen'
@@ -41,7 +41,7 @@ function AppTabs() {
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: '首页' }} />
       <Tab.Screen name="Transactions" component={TransactionListScreen} options={{ title: '明细' }} />
-      <Tab.Screen name="Assets" component={AssetsScreen} options={{ title: '资产' }} />
+      <Tab.Screen name="Analytics" component={AnalyticsScreen} options={{ title: '分析' }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: '我的' }} />
     </Tab.Navigator>
   )

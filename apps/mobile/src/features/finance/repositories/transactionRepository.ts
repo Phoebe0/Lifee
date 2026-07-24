@@ -80,6 +80,28 @@ export const transactionRepository = {
     return rows.map(mapRow)
   },
 
+  async listBetween(startInclusive: Date, endExclusive: Date): Promise<Transaction[]> {
+    if (
+      Number.isNaN(startInclusive.getTime()) ||
+      Number.isNaN(endExclusive.getTime()) ||
+      startInclusive >= endExclusive
+    ) {
+      throw new Error('交易查询日期范围无效。')
+    }
+
+    const db = await getDatabase()
+    const rows = await db.getAllAsync<TransactionRow>(`
+      SELECT ${transactionColumns}
+      FROM transactions
+      WHERE deleted_at IS NULL
+        AND occurred_at >= ?
+        AND occurred_at < ?
+      ORDER BY occurred_at ASC, created_at ASC
+    `, startInclusive.toISOString(), endExclusive.toISOString())
+
+    return rows.map(mapRow)
+  },
+
   async listPage(query: TransactionPageQuery): Promise<TransactionPageResult> {
     validatePagination(query)
 

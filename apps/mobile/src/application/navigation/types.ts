@@ -8,6 +8,6 @@ export type RootStackParamList = {
 export type AppTabParamList = {
   Home: undefined
   Transactions: undefined
-  Assets: undefined
+  Analytics: undefined
   Profile: undefined
 }
