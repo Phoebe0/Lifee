@@ -23,3 +23,23 @@ export interface CreateTransactionInput {
   occurredAt: string
   note?: string
 }
+
+export interface TransactionPageQuery {
+  page: number
+  pagSize: number
+}
+
+export interface TransactionPageResult {
+  items: Transaction[]
+  page: number
+  pageSize: number
+  total: number
+  hasMore: boolean
+}
+
+export interface MonthlyTransactionSummary {
+  monthLabel: string
+  expenseCent: number
+  incomeCent: number
+  balanceCent: number
+}

@@ -6,6 +6,11 @@ export interface ApiResponse<T> {
   serverTime: number
 }
 
+export interface PageQuery {
+  page: number
+  pagSize: number
+}
+
 export interface PageResult<T> {
   items: T[]
   page: number

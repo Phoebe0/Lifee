@@ -1,6 +1,12 @@
 import { getDatabase } from '../../../core/database/database'
 import { randomUUID } from 'expo-crypto'
-import type { CreateTransactionInput, Transaction } from '../models/transaction'
+import type {
+  CreateTransactionInput,
+  MonthlyTransactionSummary,
+  Transaction,
+  TransactionPageQuery,
+  TransactionPageResult
+} from '../models/transaction'
 
 interface TransactionRow {
   id: string
@@ -14,6 +20,15 @@ interface TransactionRow {
   sync_status: 'pending' | 'synced' | 'failed'
   created_at: string
   updated_at: string
+}
+
+interface TransactionCountRow {
+  total: number
+}
+
+interface TransactionSummaryRow {
+  income_cent: number
+  expense_cent: number
 }
 
 const transactionColumns = `
@@ -44,6 +59,15 @@ const mapRow = (row: TransactionRow): Transaction => ({
   updatedAt: row.updated_at
 })
 
+const validatePagination = ({ page, pagSize }: TransactionPageQuery) => {
+  if (!Number.isInteger(page) || page < 1) {
+    throw new Error('page 必须是大于等于 1 的整数。')
+  }
+  if (!Number.isInteger(pagSize) || pagSize < 1 || pagSize > 100) {
+    throw new Error('pagSize 必须是 1 到 100 之间的整数。')
+  }
+}
+
 export const transactionRepository = {
   async list(): Promise<Transaction[]> {
     const db = await getDatabase()
@@ -54,6 +78,62 @@ export const transactionRepository = {
       ORDER BY occurred_at DESC, created_at DESC
     `)
     return rows.map(mapRow)
+  },
+
+  async listPage(query: TransactionPageQuery): Promise<TransactionPageResult> {
+    validatePagination(query)
+
+    const db = await getDatabase()
+    const offset = (query.page - 1) * query.pagSize
+
+    // 计数与分页都在数据库层完成，前端不会先读取全表再切片。
+    const [countRow, rows] = await Promise.all([
+      db.getFirstAsync<TransactionCountRow>(`
+        SELECT COUNT(*) AS total
+        FROM transactions
+        WHERE deleted_at IS NULL
+      `),
+      db.getAllAsync<TransactionRow>(`
+        SELECT ${transactionColumns}
+        FROM transactions
+        WHERE deleted_at IS NULL
+        ORDER BY occurred_at DESC, created_at DESC, id DESC
+        LIMIT ? OFFSET ?
+      `, query.pagSize, offset)
+    ])
+
+    const total = countRow?.total ?? 0
+    return {
+      items: rows.map(mapRow),
+      page: query.page,
+      pageSize: query.pagSize,
+      total,
+      hasMore: offset + rows.length < total
+    }
+  },
+
+  async getCurrentMonthSummary(referenceDate = new Date()): Promise<MonthlyTransactionSummary> {
+    const db = await getDatabase()
+    const monthStart = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), 1)
+    const nextMonthStart = new Date(referenceDate.getFullYear(), referenceDate.getMonth() + 1, 1)
+    const row = await db.getFirstAsync<TransactionSummaryRow>(`
+      SELECT
+        COALESCE(SUM(CASE WHEN type = 'income' THEN amount_cent ELSE 0 END), 0) AS income_cent,
+        COALESCE(SUM(CASE WHEN type = 'expense' THEN amount_cent ELSE 0 END), 0) AS expense_cent
+      FROM transactions
+      WHERE deleted_at IS NULL
+        AND occurred_at >= ?
+        AND occurred_at < ?
+    `, monthStart.toISOString(), nextMonthStart.toISOString())
+
+    const incomeCent = row?.income_cent ?? 0
+    const expenseCent = row?.expense_cent ?? 0
+    return {
+      monthLabel: `${referenceDate.getMonth() + 1}月`,
+      incomeCent,
+      expenseCent,
+      balanceCent: incomeCent - expenseCent
+    }
   },
 
   async getById(id: string): Promise<Transaction | null> {

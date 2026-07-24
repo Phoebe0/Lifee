@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { theme } from '../../../design/theme'
-import type { MonthlyTransactionSummary } from '../utils/transactionList'
+import type { MonthlyTransactionSummary } from '../models/transaction'
 
 interface TransactionSummaryCardProps {
   summary: MonthlyTransactionSummary
@@ -23,13 +23,13 @@ export const TransactionSummaryCard = memo(function TransactionSummaryCard({
       <View style={styles.metrics}>
         <View style={styles.primaryMetric}>
           <Text style={styles.label}>{summary.monthLabel}总支出</Text>
-          <Text adjustsFontSizeToFit minimumFontScale={0.75} numberOfLines={1} style={styles.expense}>
+          <Text numberOfLines={1} style={styles.expense}>
             {money(summary.expenseCent)}
           </Text>
         </View>
         <View style={styles.secondaryMetric}>
           <Text style={styles.label}>本月收入</Text>
-          <Text adjustsFontSizeToFit minimumFontScale={0.75} numberOfLines={1} style={styles.income}>
+          <Text numberOfLines={1} style={styles.income}>
             {money(summary.incomeCent)}
           </Text>
         </View>
@@ -61,15 +61,10 @@ const styles = StyleSheet.create({
     gap: theme.spacing[4],
     overflow: 'hidden',
     padding: 19,
-    backgroundColor: theme.color.surfaceSubtle,
+    backgroundColor: theme.finance.glassSurface,
     borderWidth: 1,
-    borderColor: theme.color.borderOverlay,
-    borderRadius: theme.radius.xl,
-    shadowColor: theme.color.shadowBrand,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 32,
-    elevation: 3
+    borderColor: theme.finance.glassBorder,
+    borderRadius: theme.radius.xl
   },
   metrics: {
     zIndex: theme.zIndex.content,
@@ -82,6 +77,7 @@ const styles = StyleSheet.create({
   secondaryMetric: { maxWidth: '44%', alignItems: 'flex-end', gap: theme.spacing[1] },
   label: {
     color: theme.color.textSecondary,
+    fontFamily: theme.typography.fontFamily.ui,
     fontSize: 12,
     fontWeight: '500',
     lineHeight: 16,
@@ -89,15 +85,17 @@ const styles = StyleSheet.create({
   },
   expense: {
     color: theme.color.text,
-    fontSize: 30,
+    fontFamily: theme.typography.fontFamily.numbers,
+    fontSize: 32,
     fontWeight: '800',
     fontVariant: ['tabular-nums'],
     lineHeight: 40,
-    letterSpacing: -0.6
+    letterSpacing: -0.64
   },
   income: {
     color: theme.color.accent,
-    fontSize: 21,
+    fontFamily: theme.typography.fontFamily.numbers,
+    fontSize: 22,
     fontWeight: '700',
     fontVariant: ['tabular-nums'],
     lineHeight: 30
@@ -110,13 +108,14 @@ const styles = StyleSheet.create({
     gap: theme.spacing[2],
     paddingTop: 17,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: theme.color.borderOverlay
+    borderTopColor: theme.finance.divider
   },
   balanceRow: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center', gap: theme.spacing[2] },
   balanceDot: { width: 8, height: 8, flexShrink: 0, backgroundColor: theme.color.brand, borderRadius: theme.radius.full },
   balanceText: {
     flex: 1,
     color: theme.color.textSecondary,
+    fontFamily: theme.typography.fontFamily.ui,
     fontSize: 12,
     fontWeight: '600',
     fontVariant: ['tabular-nums'],
@@ -126,11 +125,12 @@ const styles = StyleSheet.create({
   analyticsButton: {
     paddingHorizontal: theme.spacing[4],
     paddingVertical: 6,
-    backgroundColor: 'rgba(79,87,149,0.10)',
+    backgroundColor: theme.finance.analysisSurface,
     borderRadius: theme.radius.full
   },
   analyticsText: {
     color: theme.color.brand,
+    fontFamily: theme.typography.fontFamily.ui,
     fontSize: 12,
     fontWeight: '500',
     lineHeight: 16,
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     right: -48,
     width: 128,
     height: 128,
-    backgroundColor: 'rgba(108,213,237,0.16)',
+    backgroundColor: theme.finance.cyanGlow,
     borderRadius: theme.radius.full
   },
   glowBottom: {
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     left: -32,
     width: 96,
     height: 96,
-    backgroundColor: 'rgba(104,112,175,0.08)',
+    backgroundColor: theme.finance.indigoGlow,
     borderRadius: theme.radius.full
   },
   pressed: { opacity: theme.opacity.pressed }

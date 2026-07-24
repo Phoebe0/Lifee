@@ -1,4 +1,7 @@
-import type { Transaction } from '../models/transaction'
+import type {
+  MonthlyTransactionSummary,
+  Transaction
+} from '../models/transaction'
 
 export interface TransactionSection {
   title: string
@@ -6,13 +9,6 @@ export interface TransactionSection {
   expenseCent: number
   incomeCent: number
   data: Transaction[]
-}
-
-export interface MonthlyTransactionSummary {
-  monthLabel: string
-  expenseCent: number
-  incomeCent: number
-  balanceCent: number
 }
 
 const DAY_IN_MS = 86_400_000

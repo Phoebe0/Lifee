@@ -101,6 +101,14 @@ const migrations = [
       SET color = 'brand', updated_at = CURRENT_TIMESTAMP
       WHERE color = '#4F5795' AND id LIKE 'default-%';
     `
+  },
+  {
+    version: 4,
+    sql: `
+      CREATE INDEX IF NOT EXISTS transactions_pagination_idx
+      ON transactions(occurred_at DESC, created_at DESC, id DESC)
+      WHERE deleted_at IS NULL;
+    `
   }
 ] as const
 

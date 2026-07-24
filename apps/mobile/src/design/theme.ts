@@ -1,3 +1,4 @@
+import { Platform } from 'react-native'
 import { lightColor } from './tokens/color'
 
 export const theme = {
@@ -9,7 +10,12 @@ export const theme = {
     body: 14,
     title: 22,
     amount: 40,
-    keypad: 22
+    keypad: 22,
+    fontFamily: {
+      // 明确指定系统无衬线字体，避免 Android 设备主题替换成装饰或衬线字体。
+      ui: Platform.select({ android: 'sans-serif', ios: 'System', default: 'system-ui' }),
+      numbers: Platform.select({ android: 'sans-serif', ios: 'System', default: 'system-ui' })
+    }
   },
   duration: { fast: 120, normal: 220, slow: 320 },
   opacity: { pressed: 0.72, muted: 0.8, disabled: 0.45 },
@@ -44,6 +50,15 @@ export const theme = {
     noticeSurface: 'rgba(230,244,254,0.82)',
     dangerSurface: 'rgba(255,237,234,0.82)',
     markAccent: '#7EE6FF'
+  },
+  finance: {
+    // 明细页对应 Figma 中的 Bubble Glass 表面，仅影响财务列表模块。
+    glassSurface: 'rgba(255,255,255,0.40)',
+    glassBorder: 'rgba(255,255,255,0.60)',
+    divider: 'rgba(255,255,255,0.40)',
+    cyanGlow: 'rgba(108,213,237,0.20)',
+    indigoGlow: 'rgba(104,112,175,0.10)',
+    analysisSurface: 'rgba(79,87,149,0.10)'
   }
 } as const
 

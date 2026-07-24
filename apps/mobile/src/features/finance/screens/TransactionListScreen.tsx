@@ -4,7 +4,6 @@ import {
   Alert,
   Pressable,
   RefreshControl,
-  SectionList,
   StyleSheet,
   Text,
   View
@@ -20,6 +19,7 @@ import type {
   AppTabParamList,
   RootStackParamList
 } from '../../../application/navigation/types'
+import { ScrollList } from '../../../components/list/ScrollList'
 import { theme } from '../../../design/theme'
 import { TransactionListItem } from '../components/TransactionListItem'
 import { TransactionSummaryCard } from '../components/TransactionSummaryCard'
@@ -27,7 +27,6 @@ import { useTransactionList } from '../hooks/useTransactionList'
 import type { Transaction } from '../models/transaction'
 import {
   groupTransactionsByDate,
-  summarizeCurrentMonth,
   type TransactionSection
 } from '../utils/transactionList'
 
@@ -45,17 +44,20 @@ export function TransactionListScreen() {
   const navigation = useNavigation<Navigation>()
   const {
     transactions,
+    summary,
     isLoading,
     isRefreshing,
+    isLoadingMore,
+    hasMore,
     deletingId,
     error,
     refresh,
     retry,
+    loadMore,
     remove
   } = useTransactionList()
 
   const sections = useMemo(() => groupTransactionsByDate(transactions), [transactions])
-  const summary = useMemo(() => summarizeCurrentMonth(transactions), [transactions])
 
   const editTransaction = useCallback((transaction: Transaction) => {
     navigation.navigate('CreateTransaction', { transactionId: transaction.id })
@@ -80,8 +82,19 @@ export function TransactionListScreen() {
     ])
   }, [remove])
 
-  const renderItem = useCallback(({ item }: { item: Transaction }) => (
-    <View style={styles.itemContainer}>
+  const renderItem = useCallback(({
+    item,
+    index,
+    section
+  }: {
+    item: Transaction
+    index: number
+    section: TransactionSection
+  }) => (
+    <View style={[
+      styles.itemContainer,
+      index === section.data.length - 1 && styles.lastItemContainer
+    ]}>
       <TransactionListItem
         deleting={deletingId === item.id}
         transaction={item}
@@ -109,13 +122,17 @@ export function TransactionListScreen() {
 
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
-      <SectionList
+      <ScrollList<Transaction, TransactionSection>
         sections={sections}
         keyExtractor={item => item.id}
         renderItem={renderItem}
         renderSectionHeader={renderSectionHeader}
         stickySectionHeadersEnabled={false}
         showsVerticalScrollIndicator={false}
+        hasMore={hasMore}
+        isLoadingMore={isLoadingMore}
+        loadingText="正在为您努力加载..."
+        onLoadMore={() => void loadMore()}
         contentContainerStyle={[
           styles.content,
           sections.length === 0 && styles.emptyContent
@@ -197,6 +214,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     marginBottom: theme.spacing[4],
     color: theme.color.text,
+    fontFamily: theme.typography.fontFamily.ui,
     fontSize: 28,
     fontWeight: '800',
     lineHeight: 36
@@ -212,6 +230,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: theme.color.textSecondary,
+    fontFamily: theme.typography.fontFamily.ui,
     fontSize: 12,
     fontWeight: '600',
     lineHeight: 16,
@@ -225,6 +244,7 @@ const styles = StyleSheet.create({
   },
   sectionTotal: {
     color: theme.color.textTertiary,
+    fontFamily: theme.typography.fontFamily.numbers,
     fontSize: 12,
     fontWeight: '600',
     fontVariant: ['tabular-nums'],
@@ -232,7 +252,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.24
   },
   sectionIncome: { color: theme.color.accent },
-  itemContainer: { paddingBottom: theme.spacing[4] },
+  itemContainer: { marginBottom: theme.spacing[4] },
+  lastItemContainer: { marginBottom: 0 },
   errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -243,8 +264,8 @@ const styles = StyleSheet.create({
     backgroundColor: theme.color.dangerSurface,
     borderRadius: theme.radius.md
   },
-  errorText: { flex: 1, color: theme.color.danger, fontSize: 13, lineHeight: 18 },
-  retryText: { color: theme.color.danger, fontSize: 13, fontWeight: '700' },
+  errorText: { flex: 1, color: theme.color.danger, fontFamily: theme.typography.fontFamily.ui, fontSize: 13, lineHeight: 18 },
+  retryText: { color: theme.color.danger, fontFamily: theme.typography.fontFamily.ui, fontSize: 13, fontWeight: '700' },
   state: {
     flex: 1,
     minHeight: 280,
@@ -253,9 +274,10 @@ const styles = StyleSheet.create({
     gap: theme.spacing[3],
     paddingHorizontal: theme.spacing[6]
   },
-  stateTitle: { color: theme.color.text, fontSize: 18, fontWeight: '700' },
+  stateTitle: { color: theme.color.text, fontFamily: theme.typography.fontFamily.ui, fontSize: 18, fontWeight: '700' },
   stateText: {
     color: theme.color.textTertiary,
+    fontFamily: theme.typography.fontFamily.ui,
     fontSize: 14,
     lineHeight: 20,
     textAlign: 'center'
@@ -267,6 +289,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.color.brand,
     borderRadius: theme.radius.full
   },
-  stateButtonText: { color: theme.color.onBrand, fontSize: 14, fontWeight: '700' },
+  stateButtonText: { color: theme.color.onBrand, fontFamily: theme.typography.fontFamily.ui, fontSize: 14, fontWeight: '700' },
   pressed: { opacity: theme.opacity.pressed }
 })
